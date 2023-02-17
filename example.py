@@ -1,6 +1,6 @@
 '''
-This script is a copy of this one https://github.com/Project-Platypus/Rhodium/blob/master/examples/Basic/example.py
-by Dave Hadka, with minor changes for training purposes. 
+This script is a copy of this one https://github.com/Project-Platypus/Rhodium/blob/master/examples/Basic/dps_example.py
+by Dave Hadka, with minor changes for training purposes by Antonia Hadjimichael.
 '''
 
 import math
@@ -9,10 +9,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.optimize import brentq as root
 from rhodium import *
-# from platypus import wrappers
-# from j3 import J3
-
-
 from time import time
 
   
@@ -95,68 +91,43 @@ model.uncertainties = [UniformUncertainty("b", 0.1, 0.45),
                        UniformUncertainty("delta", 0.93, 0.99)]
 
 
-output = optimize(model, "NSGAII", 10000)
+output = optimize(model, "NSGAII", 2000)
 
 
 #Save optimization results 
 output.save("output.csv") 
 output.as_dataframe()[list(model.responses.keys())].to_csv('output_objectives.csv')
-##Save only the objectives from the optimization results 
-#output.as_dataframe()[list(model.responses.keys())].to_csv('output_objectives.csv')
-#
-#SOWs = sample_lhs(model, 1000)
-#SOWs.save("SOWs.csv") 
-#reevaluation = [evaluate(model, update(SOWs, policy)) for policy in output]
 
+# The same sets of SOWs are used to evaluate DPS and IT policies
+# SOWs are generated using latain hypercube sampling via
+# SOWs = sample_lhs(model, 1000)
+# SOWs.save("SOWs.csv") 
 SOWs=load("SOWs.csv")[1]
 evaluate = timer_func(evaluate)
-reevaluation_dps = [evaluate(model, update(SOWs, policy)) for policy in output]
+reevaluation_it = [evaluate(model, update(SOWs, policy)) for policy in output]
 
-for i in range(len(reevaluation_dps)):
-    reevaluation_dps[i].save("reevaluation_it_"+str(i)+".csv")
+for i in range(len(reevaluation_it)):
+    reevaluation_it[i].save("reevaluation_it_"+str(i)+".csv")
 
 robustness_it = np.zeros(len(output))
 
 for i in range(len(robustness_it)):
-    robustness_it[i]=np.mean([1 if SOW['reliability']>=0.95 and SOW['utility']>=0.2 else 0 for SOW in reevaluation_dps[i]])
+    robustness_it[i]=np.mean([1 if SOW['reliability']>=0.95 and SOW['utility']>=0.2 else 0 for SOW in reevaluation_it[i]])
     
 np.savetxt("robustness_it.txt",robustness_it)
 
-#
-#robustness = np.zeros(len(output))
-#
-#for i in range(len(robustness)):
-#    robustness[i]=np.mean([1 if SOW['reliability']>=0.95 and SOW['utility']>=0.2 else 0 for SOW in reevaluation[i]])
-#    
-#np.savetxt("robustness.txt.",robustness)
-#
-#policy = output.find_max("reliability")
-#
-#sobol_results = sa(model, "reliability", policy=policy, method="sobol", nsamples=10000)
-#
-#scenario_discovery = evaluate(model, update(SOWs, policy))
-#classification = scenario_discovery.apply("'Reliable' if reliability >= 0.95 and utility >=0.2 else 'Unreliable'")
-#p = Prim(scenario_discovery, classification, include=model.uncertainties.keys(), coi="Reliable")
-#box = p.find_box()
-#fig = box.show_tradeoff()
-#
-#
-#c = Cart(scenario_discovery, classification, include=model.uncertainties.keys(), min_samples_leaf=50)
-#c.show_tree()
-#
-# dps_output=load("dps_output.csv")[1]
-# output=load("output.csv")[1]
+# parallel coordinate plot
+# parallel_coordinates(model, output, colormap="rainbow", zorder="reliability", brush=Brush("reliability > 0.2"))     
+# plt.show()
 
+# obj pair scatter plots for comparing conflicting objs
+# pairs(model, output)
+# plt.show()
 
-# for i in range(len(output)):
-#     output[i]['strategy']=1
-# for i in range(len(dps_output)):
-#     dps_output[i]['strategy']=0
-
-# merged = DataSet(output+dps_output)
-
-# J3(merged.as_dataframe(list(model.responses.keys())+['strategy']))
-
-# 
-##colnames = ['sol_no']+list(dps_model.responses.keys())+['strategy']    
-##merged_sorted = load('overallreference.csv', names=colnames)[1]
+# Try this for the PRIM analysis to identify feasible parameter space for robust policy performance
+# results = evaluate(model, update(SOWs, output[2]))
+# metric = ["Success" if rr['reliability']>=0.95 and rr['utility']>=0.2 else 'Failure' for rr in results]
+# p = Prim(results, metric, include=model.uncertainties.keys(), coi="Success")
+# box = p.find_box()
+# box.show_details()
+# plt.show()

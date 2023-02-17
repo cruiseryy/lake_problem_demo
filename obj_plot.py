@@ -88,5 +88,6 @@ def makeSubPlot(IT, ITrobustness, DPS, DPSrobustness, objs_min, objs_max, ax, fi
     ax.set_zlim(objs_min[0],objs_max[0])
     
     return pts_IT, pts_DPS, pt_ideal
-    
-makeFigure9()
+
+if __name__ == '__main__':
+    makeFigure9()

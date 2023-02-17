@@ -1,6 +1,6 @@
 '''
 This script is a copy of this one https://github.com/Project-Platypus/Rhodium/blob/master/examples/Basic/dps_example.py
-by Dave Hadka, with minor changes for training purposes. 
+by Dave Hadka, with minor changes for training purposes by Antonia Hadjimichael.
 '''
 
 import math
@@ -9,7 +9,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.optimize import brentq as root
 from rhodium import *
-# from platypus import wrappers
+from time import time
 import ast
 
 # Example using direct policy search (DPS) following the approach of [1]:
@@ -22,9 +22,6 @@ import ast
 # This lever stores one or more cubic radial basis functions defined by a center,
 # radius, and weight.  We could have also created a RealLever for each value, but
 # creating a class in this manner aids re-usability.
-
-from time import time
-
   
 def timer_func(func):
     # This function shows the execution time of 
@@ -80,8 +77,7 @@ class CubicDPSLever(Lever):
 
         return policy
   
-# A function for evaluating our cubic DPS.  This is based on equation (12)
-# from [1].
+# A function for evaluating our cubic DPS.  This is based on equation (12) from [1].
 def evaluateCubicDPS(policy, current_value):
     value = 0
     
@@ -156,13 +152,15 @@ dps_model.uncertainties = [UniformUncertainty("b", 0.1, 0.45),
                        UniformUncertainty("stdev", 0.001, 0.005),
                        UniformUncertainty("delta", 0.93, 0.99)]
 
-dps_output = optimize(dps_model, "NSGAII", 10000, epsilons=[0.01, 0.01, 0.0001, 0.0001])
+# NFE = 5000, 
+dps_output = optimize(dps_model, "NSGAII", 2000, epsilons=[0.01, 0.01, 0.0001, 0.0001])
 dps_output.save("dps_output.csv") 
 dps_output.as_dataframe()[list(dps_model.responses.keys())].to_csv('dps_output_objectives.csv')
 
-#dps_output=load("dps_output.csv")[1]
-#for i in range(len(dps_output)):
-#    dps_output[i]['policy']=ast.literal_eval(dps_output[i]['policy'])
+# The same sets of SOWs are used to evaluate DPS and IT policies
+# SOWs are generated using latain hypercube sampling via
+# SOWs = sample_lhs(model, 1000)
+# SOWs.save("SOWs.csv") 
 SOWs=load("SOWs.csv")[1]
 evaluate = timer_func(evaluate)
 reevaluation_dps = [evaluate(dps_model, update(SOWs, policy)) for policy in dps_output]

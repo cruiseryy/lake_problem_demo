@@ -1,5 +1,11 @@
 # lake_problem_demo
-this is a demo for solving multi-objective optimization using MORDM (Kasprzyk et al., 2013). A simplified lake problem is solved using MOEA+DPS in python (using Platypus &amp;Rhodium developed by David Hadka). For further details, please refer to Julianne Quinn's orinigal paper in 2017 (tipping point). Some changes are made to the scripts by Antonia Hadjimichael for training purposes.
+This is a demo for solving multi-objective optimization using MORDM (Kasprzyk et al., 2013). A simplified lake problem is solved using MOEA+DPS in python (using Platypus &amp;Rhodium developed by David Hadka). For further details, please refer to Julianne Quinn's orinigal paper in 2017 (tipping point). Some changes are made to the scripts by Antonia Hadjimichael for training purposes.
+
+Rhodium is required to run the demo scripts and can be installed via 
+```
+pip install rhodium
+```
+and further resources about Rhodium can be found here https://github.com/Project-Platypus/Rhodium
 
 Relevant references include but are not limited to:
 

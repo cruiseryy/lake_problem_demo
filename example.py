@@ -131,3 +131,9 @@ np.savetxt("robustness_it.txt",robustness_it)
 # box = p.find_box()
 # box.show_details()
 # plt.show()
+
+# try this for the Sobol analysis (variance-based sensitivity analysis using sobol sequences)
+# policy = output.find_max("reliability")
+# sobol_results = sa(model, "reliability", policy=policy, method="sobol", nsamples=1000)
+# fig = sobol_results.plot_sobol(threshold=0.01)
+# PAUSE = 1

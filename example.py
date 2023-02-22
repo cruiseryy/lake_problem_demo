@@ -37,6 +37,7 @@ def lake_problem(pollution_limit,
     X = np.zeros((nvars,))
     average_daily_P = np.zeros((nvars,))
     decisions = np.array(pollution_limit)
+    # decisions = pollution_limit
     reliability = 0.0
 
     for _ in range(nsamples):
@@ -117,23 +118,33 @@ for i in range(len(robustness_it)):
 np.savetxt("robustness_it.txt",robustness_it)
 
 # parallel coordinate plot
-# parallel_coordinates(model, output, colormap="rainbow", zorder="reliability", brush=Brush("reliability > 0.2"))     
+parallel_coordinates(model, output, colormap="rainbow", zorder="reliability", brush=Brush("reliability > 0.2"))     
 # plt.show()
+plt.savefig('parallel_coord_plot.png')
+plt.close()
 
 # obj pair scatter plots for comparing conflicting objs
-# pairs(model, output)
+pairs(model, output)
 # plt.show()
+plt.savefig('obj_pair_scatter.png')
+plt.close()
 
+
+policy = output.find_max("reliability")
 # Try this for the PRIM analysis to identify feasible parameter space for robust policy performance
-# results = evaluate(model, update(SOWs, output[2]))
-# metric = ["Success" if rr['reliability']>=0.95 and rr['utility']>=0.2 else 'Failure' for rr in results]
-# p = Prim(results, metric, include=model.uncertainties.keys(), coi="Success")
-# box = p.find_box()
-# box.show_details()
+results = evaluate(model, update(SOWs, policy))
+metric = ["Success" if rr['reliability']>=0.95 and rr['utility']>=0.2 else 'Failure' for rr in results]
+p = Prim(results, metric, include=model.uncertainties.keys(), coi="Success")
+box = p.find_box()
+box.show_details()
 # plt.show()
+plt.savefig('prim.png')
+plt.close()
 
 # try this for the Sobol analysis (variance-based sensitivity analysis using sobol sequences)
-# policy = output.find_max("reliability")
-# sobol_results = sa(model, "reliability", policy=policy, method="sobol", nsamples=1000)
-# fig = sobol_results.plot_sobol(threshold=0.01)
-# PAUSE = 1
+sobol_results = sa(model, "reliability", policy=policy, method="sobol", nsamples=1000)
+fig = sobol_results.plot_sobol(threshold=0.01)
+plt.savefig('sobol_fig.png')
+plt.close()
+
+PAUSE = 1

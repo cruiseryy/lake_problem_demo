@@ -141,7 +141,7 @@ dps_model.responses = [Response("max_P", Response.MINIMIZE),
                    Response("reliability", Response.MAXIMIZE)]
 
 # Use our new DPS lever
-dps_model.levers = [CubicDPSLever("policy", length=3)]
+dps_model.levers = [CubicDPSLever("policy", length=2)]
 
 # Define any constraints (can reference any parameter or response by name)
 dps_model.constraints = [Constraint("reliability >= 0.95")]

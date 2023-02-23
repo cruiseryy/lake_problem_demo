@@ -99,10 +99,10 @@ output = optimize(model, "NSGAII", 2000)
 output.save("output.csv") 
 output.as_dataframe()[list(model.responses.keys())].to_csv('output_objectives.csv')
 
-# The same sets of SOWs are used to evaluate DPS and IT policies
-# SOWs are generated using latain hypercube sampling via
-# SOWs = sample_lhs(model, 1000)
-# SOWs.save("SOWs.csv") 
+# # The same sets of SOWs are used to evaluate DPS and IT policies
+# # SOWs are generated using latain hypercube sampling via
+# # SOWs = sample_lhs(model, 1000)
+# # SOWs.save("SOWs.csv") 
 SOWs=load("SOWs.csv")[1]
 evaluate = timer_func(evaluate)
 reevaluation_it = [evaluate(model, update(SOWs, policy)) for policy in output]
@@ -116,6 +116,8 @@ for i in range(len(robustness_it)):
     robustness_it[i]=np.mean([1 if SOW['reliability']>=0.95 and SOW['utility']>=0.2 else 0 for SOW in reevaluation_it[i]])
     
 np.savetxt("robustness_it.txt",robustness_it)
+
+# output2 = load('output.csv')[1]
 
 # parallel coordinate plot
 parallel_coordinates(model, output, colormap="rainbow", zorder="reliability", brush=Brush("reliability > 0.2"))     
@@ -141,10 +143,18 @@ box.show_details()
 plt.savefig('prim.png')
 plt.close()
 
+
+# c = Cart(results, metric, include=model.uncertainties.keys())
+# c.print_tree(coi="Reliable")
+# c.show_tree()
+# plt.show()
+
 # try this for the Sobol analysis (variance-based sensitivity analysis using sobol sequences)
 sobol_results = sa(model, "reliability", policy=policy, method="sobol", nsamples=1000)
 fig = sobol_results.plot_sobol(threshold=0.01)
 plt.savefig('sobol_fig.png')
 plt.close()
+
+
 
 PAUSE = 1

@@ -10,7 +10,7 @@ and further resources about Rhodium can be found here https://github.com/Project
 To optimize the system using a open loop intertemporal strategy, run ```example.py```.
 To optimize the system using a close loop DPS strategy, run ```dps_example.py```.
 
-For visualization, ```plot_plocies.py``` is to plot a DPS policy (decision as a function of system states); ```plot_robustness.py``` is for comparing robustness of DPS and intertemporal policies under altered SOWs; and ```obj_plot.py``` is for comparing DPS and intertemporal policies in the objective space.
+For visualization, ```plot_policies.py``` is to plot a DPS policy (decision as a function of system states); ```plot_robustness.py``` is for comparing robustness of DPS and intertemporal policies under altered SOWs; and ```obj_plot.py``` is for comparing DPS and intertemporal policies in the objective space.
 
 Relevant references include but are not limited to:
 
